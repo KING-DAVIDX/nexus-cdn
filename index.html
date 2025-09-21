@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDN Proxy Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .upload-container {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .upload-container:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .upload-container.dragover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #764ba2;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            display: none;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .result-url {
+            word-break: break-all;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        
+        .copy-btn {
+            background: #764ba2;
+        }
+        
+        .copy-btn:hover {
+            background: #6a4190;
+        }
+        
+        .status {
+            margin: 15px 0;
+            font-weight: 600;
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .error {
+            color: #dc3545;
+        }
+        
+        .file-info {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f0f2f5;
+            border-radius: 6px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CDN Proxy Service</h1>
+        <p>Upload files to our secure CDN. The original URL will be hidden behind our proxy for added security.</p>
+        <p><strong>No file size limits</strong> - upload any file you need!</p>
+        
+        <div class="upload-container" id="uploadContainer">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click or drag files to upload</div>
+            <div>No file size restrictions</div>
+            <input type="file" class="file-input" id="fileInput">
+        </div>
+        
+        <div class="file-info" id="fileInfo"></div>
+        
+        <button class="btn" id="uploadBtn" disabled>Upload File</button>
+        
+        <div class="progress-bar" id="progressBar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="status" id="status"></div>
+        
+        <div class="result" id="result">
+            <div class="result-title">Your file is now available at:</div>
+            <div class="result-url" id="resultUrl"></div>
+            <button class="btn copy-btn" id="copyBtn">Copy URL</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadContainer = document.getElementById('uploadContainer');
+            const fileInput = document.getElementById('fileInput');
+            const fileInfo = document.getElementById('fileInfo');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progress = document.getElementById('progress');
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+            const resultUrl = document.getElementById('resultUrl');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            let selectedFile = null;
+            
+            // Drag and drop functionality
+            uploadContainer.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadContainer.classList.add('dragover');
+            });
+            
+            uploadContainer.addEventListener('dragleave', function() {
+                uploadContainer.classList.remove('dragover');
+            });
+            
+            uploadContainer.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadContainer.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    handleFileSelect(e.dataTransfer.files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length) {
+                    handleFileSelect(fileInput.files[0]);
+                }
+            });
+            
+            function handleFileSelect(file) {
+                selectedFile = file;
+                uploadBtn.disabled = false;
+                
+                // Show file information
+                fileInfo.style.display = 'block';
+                fileInfo.innerHTML = `
+                    <strong>Selected file:</strong> ${file.name}<br>
+                    <strong>Size:</strong> ${formatFileSize(file.size)}<br>
+                    <strong>Type:</strong> ${file.type || 'Unknown'}
+                `;
+                
+                showStatus('Ready to upload', '');
+            }
+            
+            uploadBtn.addEventListener('click', function() {
+                if (!selectedFile) return;
+                uploadFile(selectedFile);
+            });
+            
+            copyBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(resultUrl.textContent)
+                    .then(() => {
+                        const originalText = copyBtn.textContent;
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyBtn.textContent = originalText;
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Could not copy text: ', err);
+                    });
+            });
+            
+            function uploadFile(file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // Reset UI
+                uploadBtn.disabled = true;
+                progressBar.style.display = 'block';
+                progress.style.width = '0%';
+                result.style.display = 'none';
+                showStatus('Uploading...', '');
+                
+                const xhr = new XMLHttpRequest();
+                
+                // Progress event
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        progress.style.width = percentComplete + '%';
+                    }
+                });
+                
+                // Load event (completed)
+                xhr.addEventListener('load', function() {
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.url) {
+                                showResult(response.url);
+                                showStatus('Upload successful!', 'success');
+                            } else if (response.error) {
+                                throw new Error(response.error);
+                            } else {
+                                throw new Error('No URL in response');
+                            }
+                        } catch (e) {
+                            showStatus('Error: ' + e.message, 'error');
+                            console.error(e);
+                        }
+                    } else {
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            showStatus(`Upload failed: ${errorResponse.error || xhr.statusText}`, 'error');
+                        } catch {
+                            showStatus(`Upload failed: ${xhr.statusText}`, 'error');
+                        }
+                    }
+                    
+                    progressBar.style.display = 'none';
+                    uploadBtn.disabled = false;
+                });
+                
+                // Error event
+                xhr.addEventListener('error', function() {
+                    showStatus('Upload failed due to network error', 'error');
+                    progressBar.style.display = 'none';
+                    uploadBtn.disabled = false;
+                });
+                
+                xhr.open('POST', '/upload', true);
+                xhr.send(formData);
+            }
+            
+            function showResult(url) {
+                resultUrl.textContent = url;
+                result.style.display = 'block';
+            }
+            
+            function showStatus(message, type) {
+                status.textContent = message;
+                status.className = 'status';
+                if (type) {
+                    status.classList.add(type);
+                }
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+                else if (bytes < 1073741824) return (bytes / 1048576).toFixed(2) + ' MB';
+                else return (bytes / 1073741824).toFixed(2) + ' GB';
+            }
+        });
+    </script>
+</body>
+</html>
