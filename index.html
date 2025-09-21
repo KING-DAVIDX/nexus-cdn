@@ -3,75 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CDN Proxy Service</title>
+    <title>Nexus CDN - Secure File Storage</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(-45deg, #0f0f23, #1a1a2e, #16213e, #0f0f23);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
         
         .container {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #5b73ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(91, 115, 255, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+        
+        .company {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .main-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
             width: 100%;
-            max-width: 500px;
-            padding: 30px;
+            max-width: 600px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            animation: fadeInUp 1s ease-out 0.2s both;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: #b0b0b0;
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(135deg, #00d4ff20, #5b73ff20);
+            border: 1px solid rgba(91, 115, 255, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
             text-align: center;
         }
         
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 28px;
+        .feature-highlight strong {
+            color: #00d4ff;
+            font-size: 1.1rem;
         }
         
-        p {
-            color: #666;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-        
-        .upload-container {
-            border: 2px dashed #667eea;
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 25px;
+        .upload-zone {
+            border: 2px dashed rgba(91, 115, 255, 0.5);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
+            margin-bottom: 2rem;
+            background: rgba(91, 115, 255, 0.05);
         }
         
-        .upload-container:hover {
-            background: rgba(102, 126, 234, 0.1);
+        .upload-zone:hover {
+            border-color: #5b73ff;
+            background: rgba(91, 115, 255, 0.1);
+            transform: translateY(-2px);
         }
         
-        .upload-container.dragover {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: #764ba2;
+        .upload-zone.dragover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            transform: scale(1.02);
         }
         
         .upload-icon {
-            font-size: 48px;
-            color: #667eea;
-            margin-bottom: 15px;
+            font-size: 4rem;
+            color: #5b73ff;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-zone:hover .upload-icon {
+            transform: scale(1.1);
+            color: #00d4ff;
         }
         
         .upload-text {
-            color: #667eea;
+            font-size: 1.3rem;
             font-weight: 600;
-            margin-bottom: 15px;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-subtext {
+            color: #a0a0a0;
+            font-size: 1rem;
         }
         
         .file-input {
@@ -84,137 +204,341 @@
             cursor: pointer;
         }
         
+        .file-info {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         .btn {
-            background: #667eea;
+            background: linear-gradient(135deg, #5b73ff, #00d4ff);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
             font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
-            display: inline-block;
-            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+            box-shadow: 0 10px 25px rgba(91, 115, 255, 0.3);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
         }
         
         .btn:hover {
-            background: #5a6fd8;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(91, 115, 255, 0.4);
         }
         
         .btn:disabled {
-            background: #ccc;
+            background: linear-gradient(135deg, #444, #666);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            margin: 2rem 0;
+            display: none;
         }
         
         .progress-bar {
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 3px;
-            margin: 20px 0;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
             overflow: hidden;
-            display: none;
+            position: relative;
         }
         
         .progress {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #5b73ff, #00d4ff);
+            border-radius: 10px;
             width: 0%;
             transition: width 0.3s ease;
+            position: relative;
         }
         
-        .result {
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 8px;
-            background: #f8f9fa;
-            display: none;
+        .progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressShine 1.5s infinite;
         }
         
-        .result-title {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .result-url {
-            word-break: break-all;
-            padding: 10px;
-            background: white;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            margin-bottom: 15px;
-        }
-        
-        .copy-btn {
-            background: #764ba2;
-        }
-        
-        .copy-btn:hover {
-            background: #6a4190;
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
         .status {
-            margin: 15px 0;
+            text-align: center;
+            margin: 1rem 0;
             font-weight: 600;
+            font-size: 1.1rem;
         }
         
-        .success {
-            color: #28a745;
-        }
+        .success { color: #00ff88; }
+        .error { color: #ff6b6b; }
         
-        .error {
-            color: #dc3545;
-        }
-        
-        .file-info {
-            margin: 15px 0;
-            padding: 10px;
-            background: #f0f2f5;
-            border-radius: 6px;
+        .result {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
             display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #00ff88;
+            text-align: center;
+        }
+        
+        .result-url {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            width: 100%;
+        }
+        
+        .donation-card {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        
+        .donation-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .donation-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .donation-details {
+            display: grid;
+            gap: 0.8rem;
+            text-align: left;
+        }
+        
+        .donation-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .donation-row:last-child {
+            border-bottom: none;
+        }
+        
+        .donation-label {
+            font-weight: 600;
+            color: #a0a0a0;
+        }
+        
+        .donation-value {
+            font-weight: 700;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .main-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .upload-zone {
+                padding: 2rem 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="stars" id="stars"></div>
+    
     <div class="container">
-        <h1>CDN Proxy Service</h1>
-        <p>Upload files to our secure CDN. The original URL will be hidden behind our proxy for added security.</p>
-        <p><strong>No file size limits</strong> - upload any file you need!</p>
-        
-        <div class="upload-container" id="uploadContainer">
-            <div class="upload-icon">📁</div>
-            <div class="upload-text">Click or drag files to upload</div>
-            <div>No file size restrictions</div>
-            <input type="file" class="file-input" id="fileInput">
+        <div class="header">
+            <div class="logo">NEXUS CDN</div>
+            <div class="subtitle">Secure File Storage & Distribution</div>
+            <div class="company">by Nexus Tech © 2025</div>
         </div>
         
-        <div class="file-info" id="fileInfo"></div>
-        
-        <button class="btn" id="uploadBtn" disabled>Upload File</button>
-        
-        <div class="progress-bar" id="progressBar">
-            <div class="progress" id="progress"></div>
+        <div class="main-card">
+            <div class="description">
+                Upload files to our secure CDN network. Your original URL will be hidden behind our proxy for enhanced security and privacy.
+            </div>
+            
+            <div class="feature-highlight">
+                <strong><i class="fas fa-infinity"></i> No file size limits</strong><br>
+                Upload any file you need, regardless of size!
+            </div>
+            
+            <div class="upload-zone" id="uploadContainer">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Click or drag files to upload</div>
+                <div class="upload-subtext">No restrictions • Instant deployment</div>
+                <input type="file" class="file-input" id="fileInput">
+            </div>
+            
+            <div class="file-info" id="fileInfo"></div>
+            
+            <div style="text-align: center;">
+                <button class="btn" id="uploadBtn" disabled>
+                    <i class="fas fa-rocket"></i> Upload File
+                </button>
+            </div>
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+            
+            <div class="status" id="status"></div>
+            
+            <div class="result" id="result">
+                <div class="result-title">
+                    <i class="fas fa-check-circle"></i> Your file is now live!
+                </div>
+                <div class="result-url" id="resultUrl"></div>
+                <button class="btn copy-btn" id="copyBtn">
+                    <i class="fas fa-copy"></i> Copy URL
+                </button>
+            </div>
         </div>
         
-        <div class="status" id="status"></div>
-        
-        <div class="result" id="result">
-            <div class="result-title">Your file is now available at:</div>
-            <div class="result-url" id="resultUrl"></div>
-            <button class="btn copy-btn" id="copyBtn">Copy URL</button>
+        <div class="donation-card">
+            <div class="donation-title">
+                <i class="fas fa-heart"></i>
+                Support Nexus CDN
+            </div>
+            <p style="color: #a0a0a0; margin-bottom: 1rem;">
+                Help us maintain and improve this service. Your support keeps Nexus CDN running smoothly!
+            </p>
+            <div class="donation-info">
+                <div class="donation-details">
+                    <div class="donation-row">
+                        <span class="donation-label">Account Number:</span>
+                        <span class="donation-value">8100835767</span>
+                    </div>
+                    <div class="donation-row">
+                        <span class="donation-label">Account Name:</span>
+                        <span class="donation-value">David Ajayi</span>
+                    </div>
+                    <div class="donation-row">
+                        <span class="donation-label">Bank:</span>
+                        <span class="donation-value">Opay</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        // Create animated stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numStars = 100;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            
             const uploadContainer = document.getElementById('uploadContainer');
             const fileInput = document.getElementById('fileInput');
             const fileInfo = document.getElementById('fileInfo');
             const uploadBtn = document.getElementById('uploadBtn');
-            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
             const progress = document.getElementById('progress');
             const status = document.getElementById('status');
             const result = document.getElementById('result');
@@ -252,15 +576,21 @@
                 selectedFile = file;
                 uploadBtn.disabled = false;
                 
-                // Show file information
                 fileInfo.style.display = 'block';
                 fileInfo.innerHTML = `
-                    <strong>Selected file:</strong> ${file.name}<br>
-                    <strong>Size:</strong> ${formatFileSize(file.size)}<br>
-                    <strong>Type:</strong> ${file.type || 'Unknown'}
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <i class="fas fa-file" style="font-size: 2rem; color: #00d4ff;"></i>
+                        <div>
+                            <div style="font-weight: 600; font-size: 1.1rem;">${file.name}</div>
+                            <div style="color: #a0a0a0;">${formatFileSize(file.size)} • ${file.type || 'Unknown type'}</div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(0, 255, 136, 0.2); padding: 0.5rem 1rem; border-radius: 8px; color: #00ff88; font-weight: 600;">
+                        <i class="fas fa-check"></i> Ready to upload
+                    </div>
                 `;
                 
-                showStatus('Ready to upload', '');
+                showStatus('File selected and ready for upload', '');
             }
             
             uploadBtn.addEventListener('click', function() {
@@ -271,14 +601,17 @@
             copyBtn.addEventListener('click', function() {
                 navigator.clipboard.writeText(resultUrl.textContent)
                     .then(() => {
-                        const originalText = copyBtn.textContent;
-                        copyBtn.textContent = 'Copied!';
+                        const originalText = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        copyBtn.style.background = 'linear-gradient(135deg, #00ff88, #00d4ff)';
                         setTimeout(() => {
-                            copyBtn.textContent = originalText;
+                            copyBtn.innerHTML = originalText;
+                            copyBtn.style.background = 'linear-gradient(135deg, #00ff88, #00d4ff)';
                         }, 2000);
                     })
                     .catch(err => {
                         console.error('Could not copy text: ', err);
+                        showStatus('Failed to copy URL to clipboard', 'error');
                     });
             });
             
@@ -286,31 +619,29 @@
                 const formData = new FormData();
                 formData.append('file', file);
                 
-                // Reset UI
                 uploadBtn.disabled = true;
-                progressBar.style.display = 'block';
+                progressContainer.style.display = 'block';
                 progress.style.width = '0%';
                 result.style.display = 'none';
-                showStatus('Uploading...', '');
+                showStatus('Uploading to Nexus CDN...', '');
                 
                 const xhr = new XMLHttpRequest();
                 
-                // Progress event
                 xhr.upload.addEventListener('progress', function(e) {
                     if (e.lengthComputable) {
                         const percentComplete = (e.loaded / e.total) * 100;
                         progress.style.width = percentComplete + '%';
+                        showStatus(`Uploading... ${percentComplete.toFixed(1)}%`, '');
                     }
                 });
                 
-                // Load event (completed)
                 xhr.addEventListener('load', function() {
                     if (xhr.status === 200) {
                         try {
                             const response = JSON.parse(xhr.responseText);
                             if (response.url) {
                                 showResult(response.url);
-                                showStatus('Upload successful!', 'success');
+                                showStatus('Upload successful! File is now live on Nexus CDN', 'success');
                             } else if (response.error) {
                                 throw new Error(response.error);
                             } else {
@@ -329,14 +660,13 @@
                         }
                     }
                     
-                    progressBar.style.display = 'none';
+                    progressContainer.style.display = 'none';
                     uploadBtn.disabled = false;
                 });
                 
-                // Error event
                 xhr.addEventListener('error', function() {
                     showStatus('Upload failed due to network error', 'error');
-                    progressBar.style.display = 'none';
+                    progressContainer.style.display = 'none';
                     uploadBtn.disabled = false;
                 });
                 
