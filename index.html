@@ -15,17 +15,9 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(-45deg, #0f0f23, #1a1a2e, #16213e, #0f0f23);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             color: #ffffff;
             overflow-x: hidden;
-        }
-        
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
         
         .stars {
@@ -40,16 +32,22 @@
         
         .star {
             position: absolute;
-            width: 2px;
-            height: 2px;
+            width: 1px;
+            height: 1px;
             background: white;
             border-radius: 50%;
-            opacity: 0.8;
-            animation: twinkle 3s infinite;
+            opacity: 0.6;
+        }
+        
+        .star.bright {
+            width: 2px;
+            height: 2px;
+            opacity: 0.9;
+            animation: twinkle 4s infinite;
         }
         
         @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
+            0%, 100% { opacity: 0.4; }
             50% { opacity: 1; }
         }
         
@@ -68,7 +66,7 @@
         .header {
             text-align: center;
             margin-bottom: 3rem;
-            animation: fadeInUp 1s ease-out;
+            animation: fadeInUp 0.6s ease-out;
         }
         
         .logo {
@@ -79,7 +77,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 30px rgba(91, 115, 255, 0.5);
         }
         
         .subtitle {
@@ -104,25 +101,8 @@
             width: 100%;
             max-width: 600px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-            animation: fadeInUp 1s ease-out 0.2s both;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
             position: relative;
-            overflow: hidden;
-        }
-        
-        .main-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shimmer 3s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
         }
         
         .description {
@@ -151,7 +131,7 @@
             border-radius: 16px;
             padding: 3rem 2rem;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
             position: relative;
             margin-bottom: 2rem;
@@ -161,24 +141,24 @@
         .upload-zone:hover {
             border-color: #5b73ff;
             background: rgba(91, 115, 255, 0.1);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
         .upload-zone.dragover {
             border-color: #00d4ff;
             background: rgba(0, 212, 255, 0.1);
-            transform: scale(1.02);
+            transform: translateY(-1px);
         }
         
         .upload-icon {
             font-size: 4rem;
             color: #5b73ff;
             margin-bottom: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
         
         .upload-zone:hover .upload-icon {
-            transform: scale(1.1);
+            transform: scale(1.05);
             color: #00d4ff;
         }
         
@@ -228,30 +208,15 @@
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
             min-width: 200px;
             box-shadow: 0 10px 25px rgba(91, 115, 255, 0.3);
         }
         
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn:hover::before {
-            left: 100%;
-        }
-        
         .btn:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 15px 35px rgba(91, 115, 255, 0.4);
         }
         
@@ -280,24 +245,8 @@
             background: linear-gradient(90deg, #5b73ff, #00d4ff);
             border-radius: 10px;
             width: 0%;
-            transition: width 0.3s ease;
+            transition: width 0.2s ease;
             position: relative;
-        }
-        
-        .progress::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: progressShine 1.5s infinite;
-        }
-        
-        @keyframes progressShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
         }
         
         .status {
@@ -317,7 +266,7 @@
             padding: 2rem;
             margin-top: 2rem;
             display: none;
-            animation: fadeInUp 0.5s ease;
+            animation: fadeInUp 0.3s ease;
         }
         
         .result-title {
@@ -352,7 +301,7 @@
             padding: 2rem;
             margin-top: 3rem;
             text-align: center;
-            animation: fadeInUp 1s ease-out 0.4s both;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
         }
         
         .donation-title {
@@ -405,7 +354,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -428,6 +377,19 @@
             
             .upload-zone {
                 padding: 2rem 1rem;
+            }
+        }
+
+        /* Prefers reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .star {
+                animation: none !important;
             }
         }
     </style>
@@ -516,23 +478,31 @@
     </div>
 
     <script>
-        // Create animated stars
+        // Optimized star creation with fewer stars and better performance
         function createStars() {
             const starsContainer = document.getElementById('stars');
-            const numStars = 100;
+            const numStars = 30; // Reduced from 100
+            
+            // Use document fragment for better performance
+            const fragment = document.createDocumentFragment();
             
             for (let i = 0; i < numStars; i++) {
                 const star = document.createElement('div');
-                star.className = 'star';
+                star.className = i % 5 === 0 ? 'star bright' : 'star'; // Only animate every 5th star
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
+                if (star.classList.contains('bright')) {
+                    star.style.animationDelay = Math.random() * 4 + 's';
+                }
+                fragment.appendChild(star);
             }
+            
+            starsContainer.appendChild(fragment);
         }
         
+        // Use requestAnimationFrame for better performance
         document.addEventListener('DOMContentLoaded', function() {
-            createStars();
+            requestAnimationFrame(createStars);
             
             const uploadContainer = document.getElementById('uploadContainer');
             const fileInput = document.getElementById('fileInput');
@@ -547,11 +517,11 @@
             
             let selectedFile = null;
             
-            // Drag and drop functionality
+            // Optimized event handlers
             uploadContainer.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 uploadContainer.classList.add('dragover');
-            });
+            }, { passive: false });
             
             uploadContainer.addEventListener('dragleave', function() {
                 uploadContainer.classList.remove('dragover');
@@ -564,7 +534,7 @@
                 if (e.dataTransfer.files.length) {
                     handleFileSelect(e.dataTransfer.files[0]);
                 }
-            });
+            }, { passive: false });
             
             fileInput.addEventListener('change', function() {
                 if (fileInput.files.length) {
@@ -630,8 +600,11 @@
                 xhr.upload.addEventListener('progress', function(e) {
                     if (e.lengthComputable) {
                         const percentComplete = (e.loaded / e.total) * 100;
-                        progress.style.width = percentComplete + '%';
-                        showStatus(`Uploading... ${percentComplete.toFixed(1)}%`, '');
+                        // Use requestAnimationFrame for smoother progress updates
+                        requestAnimationFrame(() => {
+                            progress.style.width = percentComplete + '%';
+                            showStatus(`Uploading... ${percentComplete.toFixed(1)}%`, '');
+                        });
                     }
                 });
                 
